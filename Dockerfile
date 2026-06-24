@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # ---- Stage 1: build ----
-FROM node:22-slim AS builder
+FROM node:22-alpine AS builder
 
-# Prisma a besoin d'OpenSSL
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# Prisma a besoin d'OpenSSL et libc6-compat sur Alpine
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
@@ -22,9 +22,9 @@ COPY src ./src
 RUN npm run build
 
 # ---- Stage 2: runtime ----
-FROM node:22-slim AS runner
+FROM node:22-alpine AS runner
 
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache openssl libc6-compat
 
 ENV NODE_ENV=production
 WORKDIR /app
