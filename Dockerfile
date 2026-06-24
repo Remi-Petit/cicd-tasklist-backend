@@ -41,6 +41,10 @@ COPY --from=builder /app/prisma ./prisma
 # Code compilé
 COPY --from=builder /app/dist ./dist
 
+# npm n'est pas nécessaire au runtime ("node dist/server.js") :
+# on le retire pour éliminer ses dépendances vulnérables et réduire la surface d'attaque
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
+
 # Exécuter en utilisateur non-root (image node fournit l'utilisateur "node")
 USER node
 
